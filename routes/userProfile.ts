@@ -33,7 +33,11 @@ module.exports = function getUserProfile () {
               if (!code) {
                 throw new Error('Username is null')
               }
-              username = eval(code) // eslint-disable-line no-eval
+              if (!/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(code)) {
+                throw new Error('Unsafe expression')
+              }
+              const safeValue = Function('return (' + code + ')')()
+              username = safeValue == null ? '' : String(safeValue)
             } catch (err) {
               username = '\\' + username
             }
